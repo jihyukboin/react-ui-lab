@@ -109,7 +109,12 @@ export default function RagPage() {
           </Tree>
         </Panel>
         <Separator className="relative w-2 cursor-col-resize before:absolute before:inset-y-0 before:left-1/2 before:w-px before:-translate-x-1/2 hover:before:bg-[#007fd4] active:before:bg-[#007fd4]" />
-        <Panel minSize={300} className="min-w-0 overflow-y-auto rounded-lg bg-[#181818] p-6" />
+        <Panel minSize={300} className="min-w-0 overflow-hidden rounded-lg bg-[#181818]">
+          <main className="flex h-full min-h-0 flex-col">
+            <header className="h-[30px] shrink-0" />
+            <div className="min-h-0 flex-1 overflow-y-auto p-6" />
+          </main>
+        </Panel>
       </Group>
     </div>
   );
