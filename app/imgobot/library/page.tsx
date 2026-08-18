@@ -2,6 +2,7 @@
 
 import { ChevronDown, ChevronRight, File, Folder, FolderOpen } from "lucide-react";
 import dynamic from "next/dynamic";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Tree, type NodeRendererProps } from "react-arborist";
 import { Group, Panel, Separator } from "react-resizable-panels";
@@ -11,13 +12,32 @@ const PdfViewer = dynamic(() => import("./pdf-viewer"), { ssr: false });
 type CurriculumNode = {
   id: string;
   name: string;
+  path?: string[];
   children?: CurriculumNode[];
 };
+
+const toSlug = (value: string) =>
+  value
+    .trim()
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/^-+|-+$/g, "");
+
+const addPaths = (nodes: CurriculumNode[], parentPath: string[] = []): CurriculumNode[] =>
+  nodes.map((node) => {
+    const segment = toSlug(node.name);
+    const path = [...parentPath, segment];
+
+    return {
+      ...node,
+      path,
+      children: node.children ? addPaths(node.children, path) : undefined,
+    };
+  });
 
 const fileNodes = (prefix: string, names: string[]): CurriculumNode[] =>
   names.map((name) => ({ id: `${prefix}-${name}`, name }));
 
-const curriculum: CurriculumNode[] = [
+const curriculumNodes: CurriculumNode[] = [
   {
     id: "2022-revision",
     name: "2022 개정 시기",
@@ -111,8 +131,17 @@ const curriculum: CurriculumNode[] = [
   },
 ];
 
+const curriculum = addPaths(curriculumNodes);
+
 function CurriculumTreeNode({ node, style }: NodeRendererProps<CurriculumNode>) {
   const isFolder = node.isInternal;
+  const router = useRouter();
+
+  const navigate = () => {
+    if (node.data.path) {
+      router.push(`/imgobot/library/${node.data.path.join("/")}`);
+    }
+  };
 
   return (
     <div style={style} className="pr-1">
@@ -122,10 +151,12 @@ function CurriculumTreeNode({ node, style }: NodeRendererProps<CurriculumNode>) 
           if (isFolder) {
             event.stopPropagation();
             node.toggle();
+            navigate();
             return;
           }
 
           node.handleClick(event);
+          navigate();
         }}
         className={`flex h-7 w-full items-center gap-1.5 rounded px-1.5 text-left text-sm text-[#cccccc] hover:bg-[#2a2d2e] ${node.isSelected ? "bg-[#37373d]" : ""
           }`}
@@ -157,6 +188,11 @@ function CurriculumTreeNode({ node, style }: NodeRendererProps<CurriculumNode>) 
 function CurriculumTree() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
+  const pathname = usePathname();
+  const selectedPath = pathname.replace(/^\/imgobot\/library\/?/, "");
+  const selectedId = selectedPath
+    ? findNodeByPath(curriculum, selectedPath.split("/"))?.id
+    : undefined;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -182,6 +218,7 @@ function CurriculumTree() {
           indent={16}
           openByDefault
           rowHeight={28}
+          selection={selectedId}
           width="100%"
           aria-label="교육과정 파일 탐색기"
         >
@@ -190,6 +227,15 @@ function CurriculumTree() {
       )}
     </div>
   );
+}
+
+function findNodeByPath(nodes: CurriculumNode[], path: string[]): CurriculumNode | undefined {
+  for (const node of nodes) {
+    if (node.path?.join("/") === path.join("/")) return node;
+
+    const child = node.children && findNodeByPath(node.children, path);
+    if (child) return child;
+  }
 }
 
 export default function RagPage() {
