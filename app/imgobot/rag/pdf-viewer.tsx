@@ -31,7 +31,7 @@ export default function PdfViewer({
     if (!container) return;
 
     const observer = new ResizeObserver(([entry]) => {
-      setPageWidth(Math.max(0, Math.floor(entry.contentRect.width) - 48));
+      setPageWidth(Math.max(0, Math.floor(entry.contentRect.width) - 16));
     });
 
     observer.observe(container);
@@ -57,7 +57,7 @@ export default function PdfViewer({
             totalCount={numPages}
             rangeChanged={({ startIndex }) => onPageChange(startIndex + 1)}
             itemContent={(index) => (
-              <div className="flex min-w-0 justify-center px-6 pb-6 first:pt-6">
+              <div className="flex min-w-0 justify-center px-2 pb-2 first:pt-2">
                 <Page
                   pageNumber={index + 1}
                   renderAnnotationLayer
