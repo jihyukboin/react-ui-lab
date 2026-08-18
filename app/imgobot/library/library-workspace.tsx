@@ -41,7 +41,7 @@ const fileNodes = (prefix: string, names: string[]): CurriculumNode[] =>
 const curriculumNodes: CurriculumNode[] = [
   {
     id: "2022-revision",
-    name: "2022 개정 시기",
+    name: "2022 개정 교육과정",
     children: [
       {
         id: "elementary-2022-12",
