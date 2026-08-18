@@ -198,9 +198,9 @@ export default function RagPage() {
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-[#303030]">
-      <header className="h-[50px] shrink-0" />
+      <header className="h-[50px] shrink-0 px-2" />
       <Group
-        className="min-h-0 flex-1 overflow-hidden px-3 py-2 pt-0"
+        className="min-h-0 flex-1 overflow-hidden px-2 py-2 pt-0"
         orientation="horizontal"
       >
         <Panel
@@ -224,6 +224,7 @@ export default function RagPage() {
           </main>
         </Panel>
       </Group>
+      <footer className="h-[90px] shrink-0 px-2" />
     </div>
   );
 }
