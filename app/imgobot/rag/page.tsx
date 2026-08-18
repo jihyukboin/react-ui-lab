@@ -2,7 +2,7 @@
 
 import { ChevronDown, ChevronRight, File, Folder, FolderOpen } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Tree, type NodeRendererProps } from "react-arborist";
 import { Group, Panel, Separator } from "react-resizable-panels";
 
@@ -127,9 +127,8 @@ function CurriculumTreeNode({ node, style }: NodeRendererProps<CurriculumNode>) 
 
           node.handleClick(event);
         }}
-        className={`flex h-7 w-full items-center gap-1.5 rounded px-1.5 text-left text-sm text-[#cccccc] hover:bg-[#2a2d2e] ${
-          node.isSelected ? "bg-[#37373d]" : ""
-        }`}
+        className={`flex h-7 w-full items-center gap-1.5 rounded px-1.5 text-left text-sm text-[#cccccc] hover:bg-[#2a2d2e] ${node.isSelected ? "bg-[#37373d]" : ""
+          }`}
       >
         {isFolder ? (
           node.isOpen ? (
@@ -155,6 +154,44 @@ function CurriculumTreeNode({ node, style }: NodeRendererProps<CurriculumNode>) 
   );
 }
 
+function CurriculumTree() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const observer = new ResizeObserver(([entry]) => {
+      setHeight(Math.floor(entry.contentRect.height));
+    });
+
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={containerRef} className="h-full min-h-0">
+      {height > 0 && (
+        <Tree<CurriculumNode>
+          className="thin-scroll"
+          data={curriculum}
+          disableDrag
+          disableEdit
+          height={height}
+          indent={16}
+          openByDefault
+          rowHeight={28}
+          width="100%"
+          aria-label="교육과정 파일 탐색기"
+        >
+          {CurriculumTreeNode}
+        </Tree>
+      )}
+    </div>
+  );
+}
+
 export default function RagPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -170,21 +207,9 @@ export default function RagPage() {
           defaultSize={300}
           maxSize={480}
           minSize={240}
-          className="overflow-hidden rounded-lg bg-[#181818] p-4"
+          className="overflow-hidden rounded-lg bg-[#181818] p-2"
         >
-          <Tree<CurriculumNode>
-            data={curriculum}
-            disableDrag
-            disableEdit
-            height={448}
-            indent={16}
-            openByDefault
-            rowHeight={28}
-            width="100%"
-            aria-label="교육과정 파일 탐색기"
-          >
-            {CurriculumTreeNode}
-          </Tree>
+          <CurriculumTree />
         </Panel>
         <Separator className="relative w-2 cursor-col-resize before:absolute before:inset-y-0 before:left-1/2 before:w-px before:-translate-x-1/2 hover:before:bg-[#007fd4] active:before:bg-[#007fd4]" />
         <Panel minSize={300} className="min-w-0 overflow-hidden rounded-lg bg-[#181818]">
