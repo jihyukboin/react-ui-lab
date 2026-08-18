@@ -25,3 +25,24 @@ body {
   color: var(--foreground);
   font-family: "Pretendard Variable";
 }
+
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #424242 transparent;
+}
+
+.thin-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.thin-scroll::-webkit-scrollbar-thumb {
+  background-color: #424242;
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 999px;
+}
+
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}

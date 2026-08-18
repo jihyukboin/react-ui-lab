@@ -1,8 +1,12 @@
 "use client";
 
 import { ChevronDown, ChevronRight, File, Folder, FolderOpen } from "lucide-react";
+import dynamic from "next/dynamic";
+import { useState } from "react";
 import { Tree, type NodeRendererProps } from "react-arborist";
 import { Group, Panel, Separator } from "react-resizable-panels";
+
+const PdfViewer = dynamic(() => import("./pdf-viewer"), { ssr: false });
 
 type CurriculumNode = {
   id: string;
@@ -81,6 +85,9 @@ function CurriculumTreeNode({ node, style }: NodeRendererProps<CurriculumNode>) 
 }
 
 export default function RagPage() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-[#303030]">
       <header className="h-[50px] shrink-0" />
@@ -111,8 +118,13 @@ export default function RagPage() {
         <Separator className="relative w-2 cursor-col-resize before:absolute before:inset-y-0 before:left-1/2 before:w-px before:-translate-x-1/2 hover:before:bg-[#007fd4] active:before:bg-[#007fd4]" />
         <Panel minSize={300} className="min-w-0 overflow-hidden rounded-lg bg-[#181818]">
           <main className="flex h-full min-h-0 flex-col">
-            <header className="h-[30px] shrink-0" />
-            <div className="min-h-0 flex-1 overflow-y-auto p-6" />
+            <header className="flex h-[30px] shrink-0 items-center px-6 text-xs text-[#cccccc]">
+              {currentPage} / {totalPages}
+            </header>
+            <PdfViewer
+              onPageChange={setCurrentPage}
+              onTotalPagesChange={setTotalPages}
+            />
           </main>
         </Panel>
       </Group>
