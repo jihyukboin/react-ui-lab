@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { Virtuoso } from "react-virtuoso";
+import { type ScrollSeekPlaceholderProps, Virtuoso } from "react-virtuoso";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
@@ -18,6 +18,14 @@ type PdfViewerProps = {
   onTotalPagesChange: (pages: number) => void;
 };
 
+function PdfScrollPlaceholder({ height }: ScrollSeekPlaceholderProps) {
+  return (
+    <div style={{ height }} className="box-border px-2 pb-2">
+      <div className="h-full rounded bg-[#252526]" />
+    </div>
+  );
+}
+
 export default function PdfViewer({
   onPageChange,
   onTotalPagesChange,
@@ -25,6 +33,15 @@ export default function PdfViewer({
   const containerRef = useRef<HTMLDivElement>(null);
   const [numPages, setNumPages] = useState(0);
   const [pageWidth, setPageWidth] = useState(0);
+  const [pageRatios, setPageRatios] = useState<number[]>([]);
+
+  const heightEstimates = useMemo(
+    () =>
+      pageRatios.map(
+        (ratio) => Math.ceil(Math.min(pageWidth, 1100) * ratio) + 8,
+      ),
+    [pageRatios, pageWidth],
+  );
 
   useEffect(() => {
     const container = containerRef.current;
@@ -42,18 +59,32 @@ export default function PdfViewer({
     <div ref={containerRef} className="h-full min-h-0 min-w-0 overflow-hidden">
       <Document
         file={pdfFile}
-        onLoadSuccess={({ numPages: loadedPages }) => {
-          setNumPages(loadedPages);
-          onTotalPagesChange(loadedPages);
+        onLoadSuccess={async (pdf) => {
+          const pageSizes = await Promise.all(
+            Array.from({ length: pdf.numPages }, async (_, index) => {
+              const page = await pdf.getPage(index + 1);
+              const viewport = page.getViewport({ scale: 1 });
+              return viewport.height / viewport.width;
+            }),
+          );
+
+          setNumPages(pdf.numPages);
+          setPageRatios(pageSizes);
+          onTotalPagesChange(pdf.numPages);
           onPageChange(1);
         }}
         className="h-full"
       >
-        {numPages > 0 && pageWidth > 0 && (
+        {numPages > 0 && heightEstimates.length === numPages && pageWidth > 0 && (
           <Virtuoso
             className="thin-scroll h-full"
-            defaultItemHeight={1100}
+            components={{ ScrollSeekPlaceholder: PdfScrollPlaceholder }}
+            heightEstimates={heightEstimates}
             increaseViewportBy={{ bottom: 600, top: 0 }}
+            scrollSeekConfiguration={{
+              enter: (velocity) => Math.abs(velocity) > 800,
+              exit: (velocity) => Math.abs(velocity) < 80,
+            }}
             totalCount={numPages}
             rangeChanged={({ startIndex }) => onPageChange(startIndex + 1)}
             itemContent={(index) => (
