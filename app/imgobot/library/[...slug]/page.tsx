@@ -1,5 +1,5 @@
-import LibraryPage from "../page";
+import LibraryWorkspace from "../library-workspace";
 
 export default function LibraryDetailPage() {
-  return <LibraryPage />;
+  return <LibraryWorkspace />;
 }
