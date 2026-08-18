@@ -14,15 +14,18 @@ type CurriculumNode = {
   children?: CurriculumNode[];
 };
 
+const fileNodes = (prefix: string, names: string[]): CurriculumNode[] =>
+  names.map((name) => ({ id: `${prefix}-${name}`, name }));
+
 const curriculum: CurriculumNode[] = [
   {
     id: "2022-revision",
     name: "2022 개정 시기",
     children: [
       {
-        id: "elementary-school",
-        name: "초등학교",
-        children: [
+        id: "elementary-2022-12",
+        name: "초등학교(2022.12)",
+        children: fileNodes("elementary-2022-12", [
           "총론",
           "국어",
           "수학",
@@ -33,8 +36,76 @@ const curriculum: CurriculumNode[] = [
           "체육",
           "음악",
           "미술",
-          "실과",
-        ].map((name) => ({ id: `elementary-${name}`, name })),
+          "실과(기술·가정)/정보과",
+          "바른 생활, 슬기로운 생활, 즐거운 생활",
+          "한국어 교육과정",
+          "창의적 체험활동",
+        ]),
+      },
+      {
+        id: "elementary-2026-01",
+        name: "초등학교(2026.01)",
+        children: fileNodes("elementary-2026-01", [
+          "총론",
+          "바른 생활, 슬기로운 생활, 건강한 생활, 즐거운 생활",
+        ]),
+      },
+      {
+        id: "middle-2022-12",
+        name: "중학교(2022.12)",
+        children: fileNodes("middle-2022-12", [
+          "총론", "국어", "수학", "영어", "사회", "도덕", "과학", "체육", "음악", "미술",
+          "기술·가정", "정보", "생활 외국어", "한문", "환경", "보건", "진로와 직업",
+          "한국어 교육과정", "창의적 체험활동",
+        ]),
+      },
+      {
+        id: "middle-2026-01",
+        name: "중학교(2026.01)",
+        children: fileNodes("middle-2026-01", ["총론"]),
+      },
+      {
+        id: "high-2022-12",
+        name: "고등학교(2022.12)",
+        children: fileNodes("high-2022-12", [
+          "총론", "국어", "수학", "영어", "사회", "도덕", "과학", "체육", "음악", "미술",
+          "기술·가정", "정보", "제2외국어", "한문", "교양", "과학 계열 선택 과목",
+          "체육 계열 선택 과목", "예술 계열 선택 과목", "전문 교과", "한국어 교육과정",
+          "창의적 체험활동",
+        ]),
+      },
+      {
+        id: "high-2026-01",
+        name: "고등학교(2026.01)",
+        children: fileNodes("high-2026-01", ["총론"]),
+      },
+      {
+        id: "elementary-middle-2024-08",
+        name: "초ㆍ중등학교(2024.08)",
+        children: fileNodes("elementary-middle-2024-08", [
+          "총론", "영어", "사회", "음악", "예술 계열 선택 과목", "전문 교과",
+          "한국어 교육과정", "중학교 선택 교과", "고등학교 교양 교과",
+        ]),
+      },
+      {
+        id: "elementary-middle-2026-01",
+        name: "초ㆍ중등학교(2026.01)",
+        children: fileNodes("elementary-middle-2026-01", ["총론"]),
+      },
+      {
+        id: "special-2022-12",
+        name: "특수교육(2022.12)",
+        children: fileNodes("special-2022-12", ["총론", "특수교육 교과/영역"]),
+      },
+      {
+        id: "special-2024-08",
+        name: "특수교육(2024.08)",
+        children: fileNodes("special-2024-08", ["총론", "특수교육 교과/영역"]),
+      },
+      {
+        id: "special-2026-01",
+        name: "특수교육(2026.01)",
+        children: fileNodes("special-2026-01", ["총론", "특수교육 교과/영역"]),
       },
     ],
   },
