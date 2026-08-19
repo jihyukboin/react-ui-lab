@@ -11,7 +11,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url,
 ).toString();
 
-const pdfFile = "/imgobot/rag/국어과_교육과정.pdf";
+const pdfFile = "/imgobot/library/국어과_교육과정.pdf";
 const pageMaxWidth = 1100;
 const pagePadding = 16;
 const viewportPreload = { bottom: 900, top: 900 };
