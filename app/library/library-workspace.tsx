@@ -136,7 +136,7 @@ const curriculum = addPaths(curriculumNodes);
 
 function CurriculumTreeNode({ node, style }: NodeRendererProps<CurriculumNode>) {
   const isFolder = node.isInternal;
-  const href = `/imgobot/library/${node.data.path?.join("/")}`;
+  const href = `/library/${node.data.path?.join("/")}`;
 
   return (
     <div style={style} className="pr-1">
@@ -182,7 +182,7 @@ function CurriculumTree() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
   const pathname = usePathname();
-  const selectedPath = pathname.replace(/^\/imgobot\/library\/?/, "");
+  const selectedPath = pathname.replace(/^\/library\/?/, "");
   const selectedId = selectedPath
     ? findNodeByPath(curriculum, selectedPath.split("/"))?.id
     : undefined;
